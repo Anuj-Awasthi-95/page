@@ -20,6 +20,9 @@
       /* center card/envelope */
       .container{z-index:2;display:flex;align-items:center;justify-content:center}
       .envelope{position:relative;overflow:visible;width:320px;cursor:pointer;border-radius:14px;padding:22px;background:linear-gradient(180deg,#fffefe,#fff);box-shadow:0 10px 30px rgba(0,0,0,0.12);text-align:center;transition:transform .25s ease;z-index:3}
+      /* fullscreen button placed in top-right of viewport (background, not inside card) */
+      .fullscreen-btn{position:fixed;top:12px;right:12px;z-index:6;border:0;background:rgba(0,0,0,0.06);backdrop-filter:blur(4px);padding:8px 10px;border-radius:10px;cursor:pointer;font-size:16px}
+      .fullscreen-btn:hover{background:rgba(0,0,0,0.09)}
       .envelope:hover{transform:translateY(-6px)}
       .title{font-size:1.25rem;margin:0 0 8px 0;color:var(--accent);font-weight:700}
       .subtitle{margin:0;color:#6b7280}
@@ -51,6 +54,7 @@
   </head>
   <body>
     <div id="bgLayer" aria-hidden="true"></div>
+    <button id="fullscreenBtn" class="fullscreen-btn" title="Toggle fullscreen" aria-pressed="false">⤢</button>
     <div class="container">
       <div id="proposal" class="envelope" role="button" tabindex="0" aria-pressed="false" aria-label="Open proposal">
         <img src="assets/envelope.svg" alt="envelope" width="72" style="display:block;margin:0 auto 10px;filter:drop-shadow(0 6px 12px rgba(0,0,0,0.08));">
@@ -208,6 +212,48 @@
         // remove after 4s
         setTimeout(()=>{ sparkles.remove(); },42000);
       }
+
+      // Fullscreen toggle
+      const fsBtn = document.getElementById('fullscreenBtn');
+      function updateFsButton(){
+        const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+        if(!fsBtn) return;
+        fsBtn.setAttribute('aria-pressed', String(isFs));
+        fsBtn.textContent = isFs ? '⤢' : '⤢';
+      }
+      function enterFullscreen(){
+        const el = document.documentElement;
+        if(el.requestFullscreen) return el.requestFullscreen();
+        if(el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+        if(el.mozRequestFullScreen) return el.mozRequestFullScreen();
+        if(el.msRequestFullscreen) return el.msRequestFullscreen();
+      }
+      function exitFullscreen(){
+        if(document.exitFullscreen) return document.exitFullscreen();
+        if(document.webkitExitFullscreen) return document.webkitExitFullscreen();
+        if(document.mozCancelFullScreen) return document.mozCancelFullScreen();
+        if(document.msExitFullscreen) return document.msExitFullscreen();
+      }
+      if(fsBtn){
+        fsBtn.addEventListener('click',()=>{
+          const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+          if(isFs) exitFullscreen(); else enterFullscreen();
+        });
+      }
+      // update icon to X when fullscreen, and back when not
+      function updateFsButton(){
+        const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+        if(!fsBtn) return;
+        fsBtn.setAttribute('aria-pressed', String(isFs));
+        fsBtn.textContent = isFs ? '✕' : '⤢';
+        fsBtn.title = isFs ? 'Exit fullscreen' : 'Enter fullscreen';
+      }
+      document.addEventListener('fullscreenchange', updateFsButton);
+      document.addEventListener('webkitfullscreenchange', updateFsButton);
+      document.addEventListener('mozfullscreenchange', updateFsButton);
+      document.addEventListener('MSFullscreenChange', updateFsButton);
+      // initial update
+      updateFsButton();
     </script>
   </body>
 </html>
