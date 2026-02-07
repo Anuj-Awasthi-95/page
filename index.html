@@ -84,6 +84,19 @@
       const noBtn = document.getElementById('noBtn');
       const result = document.getElementById('result');
       const burst = document.getElementById('burst');
+      // encouraging messages shown when user presses No (rotates randomly)
+      const noMessages = [
+        "You're a whole vibe — anyone would be lucky to say yes!",
+        "Worthier than a dozen roses — don't you forget it 🌹",
+        "Legend-tier sweetheart — you're pure gold ✨",
+        "Huge heart, top-tier human — the right person knows it.",
+        "Unapologetically wonderful — keep sparkling 💫"
+      ];
+
+      function showRandomNoMessage(){
+        const m = noMessages[Math.floor(Math.random()*noMessages.length)];
+        result.textContent = m;
+      }
 
       function openProposal(){
         // hide header/title and subtitle to focus on the question
@@ -109,8 +122,8 @@
         // hide action buttons
         const actions = document.querySelector('#openCard .actions');
         if(actions) actions.style.display = 'none';
-        // show message
-        result.textContent = 'Yes! I knew it 💖';
+        // show caring message under the question (keep question unchanged)
+        result.textContent = "Oh... I'll always care for you.";
         // sparkle effect over the card
         showSparkles();
         // convert background NOs to YES and let them fall
@@ -118,9 +131,9 @@
         launchHearts();
       });
       noBtn.addEventListener('click',()=>{
-        result.textContent = "Oh... I'll always care for you.";
+        // show a random encouraging message
+        showRandomNoMessage();
         // add two NO images to the background layer (persistent)
-        addNoToBackground();
         addNoToBackground();
         addNoToBackground();
         // gentle fade hint
@@ -219,7 +232,8 @@
         const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
         if(!fsBtn) return;
         fsBtn.setAttribute('aria-pressed', String(isFs));
-        fsBtn.textContent = isFs ? '⤢' : '⤢';
+        fsBtn.textContent = isFs ? '✕' : '⤢';
+        fsBtn.title = isFs ? 'Exit fullscreen' : 'Enter fullscreen';
       }
       function enterFullscreen(){
         const el = document.documentElement;
@@ -239,14 +253,6 @@
           const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
           if(isFs) exitFullscreen(); else enterFullscreen();
         });
-      }
-      // update icon to X when fullscreen, and back when not
-      function updateFsButton(){
-        const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
-        if(!fsBtn) return;
-        fsBtn.setAttribute('aria-pressed', String(isFs));
-        fsBtn.textContent = isFs ? '✕' : '⤢';
-        fsBtn.title = isFs ? 'Exit fullscreen' : 'Enter fullscreen';
       }
       document.addEventListener('fullscreenchange', updateFsButton);
       document.addEventListener('webkitfullscreenchange', updateFsButton);
